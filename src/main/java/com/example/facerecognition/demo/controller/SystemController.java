@@ -1,5 +1,11 @@
 package com.example.facerecognition.demo.controller;
 
+import com.example.facerecognition.demo.entity.Admin;
+import com.example.facerecognition.demo.repository.AdminRepository;
+import com.example.facerecognition.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -9,5 +15,26 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class SystemController {
+    @Autowired
+    private AdminRepository adminRepository;
 
+    @PostMapping("/login")
+    public ResponseEntity login(String userName, String passWord){
+        Admin admin = adminRepository.findByUserName(userName);
+
+        if (admin.getPassWord().equals(passWord)){
+            return ResponseEntity.ok("success");
+        }
+        return ResponseEntity.ok("fail");
+    }
+
+    @PostMapping("/adupdate")
+    public ResponseEntity adupdate(Admin admin){
+        Admin update = adminRepository.save(admin);
+
+        if (update != null){
+            return ResponseEntity.ok("success");
+        }
+        return ResponseEntity.ok("fail");
+    }
 }
