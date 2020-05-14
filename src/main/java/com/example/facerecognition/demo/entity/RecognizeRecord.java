@@ -2,10 +2,7 @@ package com.example.facerecognition.demo.entity;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -20,6 +17,7 @@ public class RecognizeRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
+    @Lob
     String imgBase64;
 
     Date createTime;

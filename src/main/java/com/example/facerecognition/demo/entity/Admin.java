@@ -21,5 +21,5 @@ public class Admin {
 
     String userName;
 
-    String password;
+    String passWord;
 }

@@ -30,9 +30,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User add(User user) {
+        User add = userRepository.save(user);
         JSONObject res = aipface.addUser(user.getImgBase64(),"BASE64","CNN",user.getUserName(),null);
         log.info(res.toString(2));
-        return userRepository.save(user);
+        return add;
     }
 
     @Override
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User find(String userName) {
-        return userRepository.deleteByUserName(userName);
+        return userRepository.findByUserName(userName);
     }
 
     @Override

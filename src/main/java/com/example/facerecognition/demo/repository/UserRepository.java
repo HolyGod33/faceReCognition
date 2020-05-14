@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @Description
  * @Date: created in 22:46 2020/5/13
  */
-public interface UserRepository extends JpaRepository<User,Integer> {
+public interface UserRepository extends JpaRepository<User,String> {
     User findByUserName(String userName);
     User deleteByUserName(String userName);
 }
