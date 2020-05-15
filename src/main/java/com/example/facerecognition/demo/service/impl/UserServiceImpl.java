@@ -1,6 +1,7 @@
 package com.example.facerecognition.demo.service.impl;
 
 import com.baidu.aip.face.AipFace;
+import com.example.facerecognition.demo.config.Base64converter;
 import com.example.facerecognition.demo.entity.User;
 import com.example.facerecognition.demo.repository.UserRepository;
 import com.example.facerecognition.demo.service.UserService;
@@ -31,7 +32,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User add(User user) {
         User add = userRepository.save(user);
-        JSONObject res = aipface.addUser(user.getImgBase64(),"BASE64","CNN",user.getId().toString(),null);
+        String base64 = Base64converter.converter(user.getImgBase64());
+        JSONObject res = aipface.addUser(base64,"BASE64","CNN",user.getId().toString(),null);
         log.info(res.toString(2));
         return add;
     }
@@ -40,10 +42,11 @@ public class UserServiceImpl implements UserService {
     public User delete(Integer id) {
         JSONObject res = aipface.deleteUser("CNN",id.toString(),null);
         log.info(res.toString(2));
+        User delete = userRepository.findById(id).get();
         if (userRepository.findById(id).isPresent()){
             userRepository.deleteById(id);
         }
-        return userRepository.findById(id).get();
+        return delete;
     }
 
     @Override

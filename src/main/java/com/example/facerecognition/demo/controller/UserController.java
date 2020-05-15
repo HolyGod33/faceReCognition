@@ -1,5 +1,6 @@
 package com.example.facerecognition.demo.controller;
 
+import com.example.facerecognition.demo.config.Base64converter;
 import com.example.facerecognition.demo.entity.RecognizeRecord;
 import com.example.facerecognition.demo.entity.User;
 import com.example.facerecognition.demo.repository.UserRepository;
@@ -75,7 +76,8 @@ public class UserController {
 
     @PostMapping("/face")
     public ResponseEntity faceRecognize(String imgBase64){
-        User face = baiduService.faceRecognize(imgBase64);
+        String base64 = Base64converter.converter(imgBase64);
+        User face = baiduService.faceRecognize(base64);
 
         if (face != null){
             RecognizeRecord recognizeRecord = new RecognizeRecord();
@@ -91,7 +93,7 @@ public class UserController {
         recognizeRecord.setUserName("not_exist");
         return ResponseEntity.ok("not exist");
     }
-    @PostMapping("/loglist")
+    @GetMapping("/loglist")
     public Page<RecognizeRecord> loglist(@RequestParam(value = "page", defaultValue = "1") Integer page,
                            @RequestParam(value = "size", defaultValue = "10") Integer size){
         return recognizeRecodeService.findAll(PageRequest.of(page-1,size));
