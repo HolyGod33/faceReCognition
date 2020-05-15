@@ -21,10 +21,10 @@
         <button @click="takePhoto">拍照</button>
         <el-row style="margin-top: 20px;" :gutter="40">
             <el-col :span="12">
-                <video id="video" width="500px" height="500px" autoplay="autoplay"></video>
+                <video id="video" width="200px" height="200px" autoplay="autoplay"></video>
             </el-col>
             <el-col :span="12">
-                <canvas id="canvas" width="500px" height="500px"></canvas>
+                <canvas id="canvas" width="200px" height="200px"></canvas>
             </el-col>
         </el-row>
         <el-button type="primary" @click="uploadImg">上传图片</el-button>
@@ -61,7 +61,7 @@
             getMedia() {
                 this.video = document.getElementById("video");
                 let constraints = {
-                    video: {width: 500, height: 500},
+                    video: {width: 200, height: 200},
                     audio: true
                 };
                 let promise = navigator.mediaDevices.getUserMedia(constraints);
@@ -76,7 +76,7 @@
                 //获得Canvas对象
                 let canvas = document.getElementById("canvas");
                 let ctx = canvas.getContext('2d');
-                ctx.drawImage(this.video, 0, 0, 500, 500);
+                ctx.drawImage(this.video, 0, 0, 200, 200);
                 let url = canvas.toDataURL('image/png', 0.3)
                 this.imgUrl = url
                 console.log(this.imgUrl)
