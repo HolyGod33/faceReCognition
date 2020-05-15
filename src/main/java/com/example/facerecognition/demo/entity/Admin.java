@@ -2,10 +2,7 @@ package com.example.facerecognition.demo.entity;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @Author JXUT CXY
@@ -14,11 +11,13 @@ import javax.persistence.Id;
  */
 @Data
 @Entity
+@IdClass(AdminId.class)
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
+    @Id
     String userName;
 
     String passWord;

@@ -52,8 +52,8 @@ public class UserController {
         return ResponseEntity.ok("fail");
     }
     @PostMapping("/delete")
-    public ResponseEntity delete(String userName){
-        User delete = userService.delete(userName);
+    public ResponseEntity delete(Integer id){
+        User delete = userService.delete(id);
         if (delete != null){
             return ResponseEntity.ok("success");
         }
@@ -90,5 +90,14 @@ public class UserController {
         recognizeRecord.setImgBase64(imgBase64);
         recognizeRecord.setUserName("not_exist");
         return ResponseEntity.ok("not exist");
+    }
+    @PostMapping("/loglist")
+    public Page<RecognizeRecord> loglist(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                           @RequestParam(value = "size", defaultValue = "10") Integer size){
+        return recognizeRecodeService.findAll(PageRequest.of(page-1,size));
+    }
+    @PostMapping("/logdelete")
+    public RecognizeRecord logdelete(Integer id){
+        return recognizeRecodeService.delete(id);
     }
 }

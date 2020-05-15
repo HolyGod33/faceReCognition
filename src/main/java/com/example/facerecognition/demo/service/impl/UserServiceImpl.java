@@ -31,23 +31,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public User add(User user) {
         User add = userRepository.save(user);
-        JSONObject res = aipface.addUser(user.getImgBase64(),"BASE64","CNN",user.getUserName(),null);
+        JSONObject res = aipface.addUser(user.getImgBase64(),"BASE64","CNN",user.getId().toString(),null);
         log.info(res.toString(2));
         return add;
     }
 
     @Override
-    public User delete(String userName) {
-        JSONObject res = aipface.deleteUser("CNN",userName,null);
+    public User delete(Integer id) {
+        JSONObject res = aipface.deleteUser("CNN",id.toString(),null);
         log.info(res.toString(2));
-        return userRepository.deleteByUserName(userName);
+        if (userRepository.findById(id).isPresent()){
+            userRepository.deleteById(id);
+        }
+        return userRepository.findById(id).get();
     }
 
     @Override
     public User update(User user) {
-        JSONObject res = aipface.updateUser(user.getImgBase64(),"BASE64","CNN",user.getUserName(),null);
+        JSONObject res = aipface.updateUser(user.getImgBase64(),"BASE64","CNN",user.getId().toString(),null);
         log.info(res.toString(2));
-        User database = userRepository.findByUserName(user.getUserName());
+        User database = userRepository.findById(user.getId()).get();
         if (user.getGender() == null){
             user.setGender(database.getGender());
         }
