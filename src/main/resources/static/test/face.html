@@ -37,14 +37,14 @@
         z-index: 2;
     }
     .face-capture .img-cover {
-        position: fixed;
+        position: absolute;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
         width: 100%;
-        height: 100%;
-        object-fit: cover;
+        /*height: 100%;*/
+        /*object-fit: cover;*/
         z-index: 2;
         background-repeat: no-repeat;
         background-size: 100% 100%;
@@ -80,10 +80,10 @@
 <div id="app">
     <div v-show="showContainer" class="face-capture" id="face-capture">
         <video ref="refVideo" id="video" :width="screenSize.width" :height="screenSize.height" autoplay></video>
-        <img src="./images/video-cover.png" alt="cover" class="img-cover"/>
+<!--        <img src="./images/video-cover.png" alt="cover" class="img-cover"/>-->
         <div class="control-container face-capture">
             <h2 class="title">{{scanTip}}</h2>
-            <img class="close" src="./images/address_edit_clear.png" alt="" @click="close"/>
+<!--            <img class="close" src="./images/address_edit_clear.png" alt="" @click="close"/>-->
             <canvas ref="refCanvas" :width="screenSize.width" :height="screenSize.height" :style="{opacity: 0}"></canvas>
         </div>
         <div class="rect" v-for="item in profile"
@@ -162,7 +162,7 @@
             initTracker() {
                 this.context = this.$refs.refCanvas.getContext("2d")    // 画布
                 this.tracker = new tracking.ObjectTracker(['face'])     // tracker实例
-                this.tracker.setStepSize(1.7)                           // 设置步长
+                this.tracker.setStepSize(1.0)                           // 设置步长
                 this.tracker.on('track', this.handleTracked)            // 绑定监听方法
                 try {
                     tracking.track('#video', this.tracker)      // 开始追踪
@@ -185,7 +185,7 @@
                         this.removePhotoID = setTimeout(() => {
                             this.tackPhoto()
                             this.tipFlag = true
-                        }, 2000)
+                        }, 1000)
                     }
                     e.data.forEach(this.plot)
                 }

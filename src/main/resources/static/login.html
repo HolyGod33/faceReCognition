@@ -32,20 +32,20 @@
 <div id="app" class="box" style="height: 100%;width: 100%;">
     <el-card class="box-card" style="width: 460px;z-index: 10;">
         <div slot="header">
-            <span style="color: #186498;font-size: 24px;font-weight: bold;">智能衣柜平台登录</span>
+            <span style="color: #186498;font-size: 24px;font-weight: bold;">人脸识别平台登录</span>
         </div>
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-            <el-form-item label="账号" prop="phoneNumber">
-                <el-input v-model="ruleForm.phoneNumber"></el-input>
+            <el-form-item label="账号" prop="userName">
+                <el-input v-model="ruleForm.userName"></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="passWord">
                 <el-input type="password" v-model="ruleForm.passWord"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-                <a href="register.html" style="text-decoration: none;">
-                    <el-button style="margin-left: 120px;">去注册</el-button>
-                </a>
+<!--                <a href="test/register.html" style="text-decoration: none;">-->
+<!--                    <el-button style="margin-left: 120px;">去注册</el-button>-->
+<!--                </a>-->
             </el-form-item>
         </el-form>
     </el-card>
@@ -57,11 +57,11 @@
         data: function () {
             return {
                 ruleForm: {
-                    phoneNumber: '',
+                    userName: '',
                     passWord: '',
                 },
                 rules: {
-                    phoneNumber: [
+                    userName: [
                         {required: true, message: '不能为空', trigger: 'change'}
                     ],
                     passWord: [
@@ -82,7 +82,7 @@
                             type: 'POST',
                             success: (res) => {
                                 if(res === 'success'){
-                                    localStorage.setItem('userId',this.ruleForm.phoneNumber)
+                                    localStorage.setItem('userId',this.ruleForm.userName)
                                     window.location.pathname = '/index.html'
                                 }else {
                                     alert('账号或密码不正确！')

@@ -4,6 +4,7 @@
 <head>
     <title>GET VIDEO</title>
     <meta charset="utf-8">
+    <script src="js/jquery.js"></script>
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- import Vue before Element -->
@@ -12,58 +13,89 @@
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
-<div id="app">
-    <el-button @click="visible = true">Button</el-button>
-    <el-dialog :visible.sync="visible" title="Hello world">
-        <p>Try Element</p>
-    </el-dialog>
-</div>
-<div>
-    <input type="button" title="开启摄像头" value="开启摄像头" onclick="getMedia()" />
-    <button id="snap" onclick="takePhoto()">拍照</button>
+<div id="app" v-loading="loading">
+    <el-page-header @back="goBack" content="采集照片">
+    </el-page-header>
+    <div style="margin-top: 20px;">
+        <button @click="getMedia">开启摄像头</button>
+        <button @click="takePhoto">拍照</button>
+        <el-row style="margin-top: 20px;" :gutter="40">
+            <el-col :span="12">
+                <video id="video" width="500px" height="500px" autoplay="autoplay"></video>
+            </el-col>
+            <el-col :span="12">
+                <canvas id="canvas" width="500px" height="500px"></canvas>
+            </el-col>
+        </el-row>
+        <el-button type="primary" @click="uploadImg">上传图片</el-button>
+    </div>
 </div>
 
-<video id="video" width="500px" height="500px" autoplay="autoplay"></video>
-<canvas id="canvas" width="500px" height="500px"></canvas>
+
 <script>
     new Vue({
         el: '#app',
         data: function() {
-            return { visible: false }
+            return {
+                video: '',
+                imgUrl: '',
+                loading: false
+            }
+        },
+        methods: {
+            goBack(){
+                window.location.pathname = 'index.html'
+            },
+            getMedia() {
+                this.video = document.getElementById("video");
+                let constraints = {
+                    video: {width: 500, height: 500},
+                    audio: true
+                };
+                let promise = navigator.mediaDevices.getUserMedia(constraints);
+                promise.then((MediaStream)=> {
+                    this.video.srcObject = MediaStream;
+                    this.video.play();
+                }).catch(function (PermissionDeniedError) {
+                    console.log(PermissionDeniedError);
+                })
+            },
+            takePhoto() {
+                //获得Canvas对象
+                let canvas = document.getElementById("canvas");
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(this.video, 0, 0, 500, 500);
+                let url = canvas.toDataURL('image/png', 1)
+                this.imgUrl = url
+                console.log(this.imgUrl)
+            },
+            uploadImg(){
+                if(this.imgUrl === ''){
+                    alert('请先采集照片')
+                    return
+                }
+                let data = {
+                    imgBase64: this.imgUrl
+                }
+                this.loading = true
+                $.ajax({
+                    url: '/face',
+                    data: data,
+                    type: 'POST',
+                    success: (res) => {
+                        if(res === 'success'){
+                            setTimeout(()=>{
+                                this.loading = false
+                            },5000)
+                        }else {
+                            alert('账号或密码不正确！')
+                        }
+                    }
+                })
+            }
         }
     })
 </script>
-<script>
-    //获得video摄像头区域
-    let video = document.getElementById("video");
-    function getMedia() {
-        let constraints = {
-            video: {width: 500, height: 500},
-            audio: true
-        };
-        /*
-        这里介绍新的方法:H5新媒体接口 navigator.mediaDevices.getUserMedia()
-        这个方法会提示用户是否允许媒体输入,(媒体输入主要包括相机,视频采集设备,屏幕共享服务,麦克风,A/D转换器等)
-        返回的是一个Promise对象。
-        如果用户同意使用权限,则会将 MediaStream对象作为resolve()的参数传给then()
-        如果用户拒绝使用权限,或者请求的媒体资源不可用,则会将 PermissionDeniedError作为reject()的参数传给catch()
-        */
-        let promise = navigator.mediaDevices.getUserMedia(constraints);
-        promise.then(function (MediaStream) {
-            video.srcObject = MediaStream;
-            video.play();
-        }).catch(function (PermissionDeniedError) {
-            console.log(PermissionDeniedError);
-        })
-    }
-    function takePhoto() {
-        //获得Canvas对象
-        let canvas = document.getElementById("canvas");
-        let ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, 500, 500);
-        let url = canvas.toDataURL('image/png', 0.3)
-        console.log(url)
-    }
-</script>
+
 </body>
 </html>
