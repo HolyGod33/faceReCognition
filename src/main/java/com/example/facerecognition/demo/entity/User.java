@@ -13,9 +13,13 @@ import javax.persistence.*;
 @Entity
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
+
     @Lob
     String imgBase64;//图片base64转码
-    @Id
+
     String userName;
 
     String gender;

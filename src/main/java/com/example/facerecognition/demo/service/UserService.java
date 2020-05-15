@@ -16,7 +16,7 @@ import java.util.List;
 public interface UserService {
     User add(User user);
 
-    User delete(String userName);
+    User delete(Integer id);
 
     User update(User user);
 

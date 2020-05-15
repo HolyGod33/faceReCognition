@@ -30,9 +30,11 @@ public class SystemController {
 
     @PostMapping("/adupdate")
     public ResponseEntity adupdate(Admin admin){
-        Admin update = adminRepository.save(admin);
+        Admin update = adminRepository.findByUserName(admin.getUserName());
 
         if (update != null){
+            admin.setId(update.getId());
+            adminRepository.save(admin);
             return ResponseEntity.ok("success");
         }
         return ResponseEntity.ok("fail");
