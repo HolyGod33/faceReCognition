@@ -14,9 +14,12 @@
 <body>
 <div id="app">
     <el-card class="box-card">
-        <div slot="header">
-            <span>卡片名称</span>
-            <el-button style="float: right; padding: 3px 0" type="text">退出登录</el-button>
+        <div slot="header" style="display: flex;justify-content: space-between;align-items: center;">
+            <div>
+                <span>卡片名称</span>
+                <el-button @click="toGetImg">采集照片</el-button>
+            </div>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="logout">退出登录</el-button>
         </div>
         <el-tabs type="border-card">
             <el-tab-pane label="用户管理">
@@ -103,6 +106,7 @@
     new Vue({
         el: '#app',
         data: {
+            isAdd: false,
             form: {
                 imgBase64: '',
                 userName: '',
@@ -114,6 +118,10 @@
             img: ''
         },
         mounted(){
+            if(localStorage.getItem("userId") === undefined || localStorage.getItem('userId') === null){
+                window.location.pathname = '/login.html'
+                return
+            }
             this.init()
             this.initLog()
         },
@@ -148,6 +156,13 @@
                     }
                 })
             },
+            toGetImg(){
+                window.location.pathname = '/img.html'
+            },
+            logout(){
+                localStorage.clear()
+                window.location.pathname = '/login.html'
+            },
             readFile() {
                 console.log(document.getElementById('img_upload').files[0])
                 var file = document.getElementById('img_upload').files[0];//这里是抓取到上传的对象。
@@ -162,6 +177,7 @@
                 },1500)
             },
             add(){
+                this.isAdd = true
                 this.form = {
                     imgBase64: '',
                     userName: '',
@@ -171,7 +187,13 @@
                 this.dialogTableVisible = true
             },
             editUser(row){
+                this.isAdd = false
+                this.form.userName = row.userName
+                this.form.gender = row.gender
+                this.form.id = row.id
+                this.img = row.imgBase64
 
+                this.dialogTableVisible = true
             },
             deleteLog(row){
                 this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -238,24 +260,47 @@
                     });
             },
             save(){
-                let params = {
-                    imgBase64: this.img,
-                    userName: this.form.userName,
-                    gender: this.form.gender
-                }
-                $.ajax({
-                    url: '/add',
-                    data: params,
-                    type: 'POST',
-                    success: (res) => {
-                        this.$message({
-                            type: 'success',
-                            message: '添加成功!'
-                        });
-                        this.dialogTableVisible = false
-                        this.init()
+                if(this.isAdd){
+                    let params = {
+                        imgBase64: this.img,
+                        userName: this.form.userName,
+                        gender: this.form.gender
                     }
-                })
+                    $.ajax({
+                        url: '/add',
+                        data: params,
+                        type: 'POST',
+                        success: (res) => {
+                            this.$message({
+                                type: 'success',
+                                message: '添加成功!'
+                            });
+                            this.dialogTableVisible = false
+                            this.init()
+                        }
+                    })
+                }else {
+                    let params = {
+                        imgBase64: this.img,
+                        userName: this.form.userName,
+                        gender: this.form.gender,
+                        id: this.form.id
+                    }
+                    $.ajax({
+                        url: '/update',
+                        data: params,
+                        type: 'POST',
+                        success: (res) => {
+                            this.$message({
+                                type: 'success',
+                                message: '修改成功!'
+                            });
+                            this.dialogTableVisible = false
+                            this.init()
+                        }
+                    })
+                }
+
             }
         }
     })
