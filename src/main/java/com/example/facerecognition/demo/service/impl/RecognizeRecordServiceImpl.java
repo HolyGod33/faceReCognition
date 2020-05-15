@@ -30,8 +30,10 @@ public class RecognizeRecordServiceImpl implements RecognizeRecodeService {
 
     @Override
     public RecognizeRecord delete(Integer id) {
+        RecognizeRecord delete = recognizeRepository.findById(id).get();
+
         recognizeRepository.deleteById(id);
 
-        return recognizeRepository.findById(id).get();
+        return delete;
     }
 }
