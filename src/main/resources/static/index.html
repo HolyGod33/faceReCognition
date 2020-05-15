@@ -19,20 +19,128 @@
             <el-button style="float: right; padding: 3px 0" type="text">退出登录</el-button>
         </div>
         <el-tabs type="border-card">
-            <el-tab-pane label="用户管理">用户管理</el-tab-pane>
+            <el-tab-pane label="用户管理">
+                <el-button @click="add">添加用户</el-button>
+                <el-table
+                        :data="tableData"
+                        style="width: 100%">
+                    <el-table-column
+                            prop="userName"
+                            label="姓名"
+                            align="center"
+                            >
+                    </el-table-column>
+                    <el-table-column
+                            prop="gender"
+                            label="性别"
+                            align="center"
+                            >
+                    </el-table-column>
+                    <el-table-column label="头像" align="center">
+                        <template slot-scope="scope">
+                            <img :src="scope.row.imgBase64" style="width: 100%;"/>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" align="center">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
             <el-tab-pane label="配置管理">配置管理</el-tab-pane>
         </el-tabs>
     </el-card>
-
+    <el-dialog title="用户管理" :visible.sync="dialogTableVisible">
+        <el-form style="margin-top: 20px;" ref="form" :model="form" label-width="80px">
+            <el-form-item label="头像">
+                <input @change="readFile" type="file" id="img_upload"></input>
+                <img v-show="img" :src="img" style="width: 100%;"/>
+            </el-form-item>
+            <el-form-item label="名字">
+                <el-input v-model="form.userName"></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+                <el-input v-model="form.gender"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button type="primary" @click="save">保存</el-button>
+        </div>
+    </el-dialog>
 </div>
 </body>
 <script>
     new Vue({
         el: '#app',
         data: {
-
+            form: {
+                imgBase64: '',
+                userName: '',
+                gender: ''
+            },
+            tableData: [],
+            dialogTableVisible: false,
+            img: ''
         },
-        methods: {}
+        mounted(){
+            // const img_upload = document.getElementById("img_upload");
+            // img_upload.addEventListener('change', this.readFile(), false);
+            this.init()
+        },
+        methods: {
+            init(){
+                let params = {
+                    page: 1,
+                    size: 100
+                }
+                $.ajax({
+                    url: '/list',
+                    data: params,
+                    type: 'GET',
+                    success: (res) => {
+                        console.log(res)
+                        this.tableData = res.content
+                    }
+                })
+            },
+            readFile() {
+                console.log(document.getElementById('img_upload').files[0])
+                var file = document.getElementById('img_upload').files[0];//这里是抓取到上传的对象。
+                if(!/image\/\w+/.test(file.type)) {
+                    alert("请确保文件为图像类型");
+                    return false;
+                }
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                setTimeout(()=>{
+                    this.img = reader.result
+                },1500)
+            },
+            add(){
+                this.dialogTableVisible = true
+            },
+            save(){
+                let params = {
+                    imgBase64: this.img,
+                    userName: this.form.userName,
+                    gender: this.form.gender
+                }
+                $.ajax({
+                    url: '/add',
+                    data: params,
+                    type: 'POST',
+                    success: (res) => {
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功!'
+                        });
+                        this.dialogTableVisible = false
+                        this.init()
+                    }
+                })
+            }
+        }
     })
 </script>
 </html>
