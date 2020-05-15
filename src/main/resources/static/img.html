@@ -29,6 +29,9 @@
         </el-row>
         <el-button type="primary" @click="uploadImg">上传图片</el-button>
     </div>
+    <el-dialog :title="userName" :visible.sync="show">
+        <img :src="imgBase64" style="width: 100%;"/>
+    </el-dialog>
 </div>
 
 
@@ -37,6 +40,9 @@
         el: '#app',
         data: function() {
             return {
+                userName: '',
+                show: false,
+                imgBase64: '',
                 video: '',
                 imgUrl: '',
                 loading: false
@@ -89,17 +95,19 @@
                     data: data,
                     type: 'POST',
                     success: (res) => {
-                        if(res === 'success'){
+                        if(res === 'not exist'){
                             setTimeout(()=>{
                                 this.loading = false
-                                alert('识别成功，通过认证！')
-                            },100)
+                                alert('该用户认证失败！')
+                            },10000)
                         }else {
                             setTimeout(()=>{
                                 this.loading = false
-                                alert('图库中无此头像，认证失败！')
-                            },100)
-
+                                alert('识别成功，通过认证！')
+                                this.imgBase64 = res.imgBase64
+                                this.userName = '姓名：' + res.userName
+                                this.show = true
+                            },10000)
                         }
                     }
                 })
