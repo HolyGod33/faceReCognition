@@ -42,6 +42,12 @@
                 loading: false
             }
         },
+        mounted(){
+            if(localStorage.getItem("userId") === undefined || localStorage.getItem('userId') === null){
+                window.location.pathname = '/login.html'
+                return
+            }
+        },
         methods: {
             goBack(){
                 window.location.pathname = 'index.html'
@@ -86,9 +92,14 @@
                         if(res === 'success'){
                             setTimeout(()=>{
                                 this.loading = false
+                                alert('识别成功，通过认证！')
                             },5000)
                         }else {
-                            alert('账号或密码不正确！')
+                            setTimeout(()=>{
+                                this.loading = false
+                                alert('图库中无此头像，认证失败！')
+                            },5000)
+
                         }
                     }
                 })
