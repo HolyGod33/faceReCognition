@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <script src="js/jquery.js"></script>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url("images/timg.jpg");
+            background-repeat: no-repeat;
+            background-origin: content-box;
+            background-position: center;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="box" style="height: 100%;width: 100%;">
+    <el-card class="box-card" style="width: 460px;z-index: 10;">
+        <div slot="header">
+            <span style="color: #186498;font-size: 24px;font-weight: bold;">智能衣柜平台登录</span>
+        </div>
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="账号" prop="phoneNumber">
+                <el-input v-model="ruleForm.phoneNumber"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="passWord">
+                <el-input type="password" v-model="ruleForm.passWord"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                <a href="register.html" style="text-decoration: none;">
+                    <el-button style="margin-left: 120px;">去注册</el-button>
+                </a>
+            </el-form-item>
+        </el-form>
+    </el-card>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                ruleForm: {
+                    phoneNumber: '',
+                    passWord: '',
+                },
+                rules: {
+                    phoneNumber: [
+                        {required: true, message: '不能为空', trigger: 'change'}
+                    ],
+                    passWord: [
+                        {required: true, message: '不能为空', trigger: 'blur'}
+                    ],
+                }
+            }
+
+        },
+        methods: {
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let params = this.ruleForm
+                        $.ajax({
+                            url: '/login',
+                            data: params,
+                            type: 'POST',
+                            success: (res) => {
+                                if(res === 'success'){
+                                    localStorage.setItem('userId',this.ruleForm.phoneNumber)
+                                    window.location.pathname = '/index.html'
+                                }else {
+                                    alert('账号或密码不正确！')
+                                }
+                            }
+                        })
+
+                    } else {
+                        return false;
+                    }
+                });
+            },
+        }
+    })
+</script>
+</body>
+</html>

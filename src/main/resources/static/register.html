@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>注册</title>
+  <script src="js/jquery.js"></script>
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    .box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: url("images/timg.jpg");
+      background-repeat: no-repeat;
+      background-origin: content-box;
+      background-position: center;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="box" style="height: 100%;width: 100%;">
+  <el-card class="box-card" style="width: 460px;z-index: 10;">
+    <div slot="header">
+      <span style="color: #186498;font-size: 24px;font-weight: bold;">智能衣柜平台注册</span>
+    </div>
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+      <el-form-item label="账号" prop="phoneNumber">
+        <el-input v-model="ruleForm.phoneNumber"></el-input>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="eMail">
+        <el-input v-model="ruleForm.eMail"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="passWord">
+        <el-input type="password" v-model="ruleForm.passWord"></el-input>
+      </el-form-item>
+      <el-form-item label="确认密码" prop="checkPass">
+        <el-input type="password" v-model="ruleForm.checkPass"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
+        <a href="login.html" style="text-decoration: none;">
+          <el-button style="margin-left: 120px;">去登录</el-button>
+        </a>
+      </el-form-item>
+    </el-form>
+  </el-card>
+</div>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: function () {
+      let validatePass = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        } else {
+          if (this.ruleForm.checkPass !== '') {
+            this.$refs.ruleForm.validateField('checkPass');
+          }
+          callback();
+        }
+      };
+      let validatePass2 = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.ruleForm.passWord) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+      }
+      return {
+        ruleForm: {
+          phoneNumber: '',
+          eMail: '',
+          passWord: '',
+          checkPass: ''
+        },
+        rules: {
+          phoneNumber: [
+            {required: true, message: '不能为空', trigger: 'change'}
+          ],
+          passWord: [
+            {validator: validatePass, trigger: 'blur'}
+          ],
+          checkPass: [
+            {validator: validatePass2, trigger: 'blur'}
+          ],
+        }
+      }
+
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              phoneNumber: this.ruleForm.phoneNumber,
+              passWord: this.ruleForm.passWord,
+              eMail: this.ruleForm.eMail
+            }
+            $.ajax({
+              url: '/register',
+              type: 'POST',
+              data: params,
+              success: (res)=>{
+                alert('注册成功！')
+                window.location.pathname = '/login.html'
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+    }
+  })
+</script>
+</body>
+</html>
