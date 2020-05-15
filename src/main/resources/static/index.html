@@ -43,14 +43,43 @@
                     </el-table-column>
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small">删除</el-button>
+                            <el-button type="text" size="small" @click="editUser(scope.row)">编辑</el-button>
+                            <el-button type="text" size="small" @click="deleteUser(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
             </el-tab-pane>
-            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
+            <el-tab-pane label="日志管理">
+                <el-table
+                        :data="tableDataLog"
+                        style="width: 100%">
+                    <el-table-column
+                            prop="userName"
+                            label="姓名"
+                            align="center"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="gender"
+                            label="创建时间"
+                            align="center"
+                    >
+                    </el-table-column>
+                    <el-table-column label="头像" align="center">
+                        <template slot-scope="scope">
+                            <img :src="scope.row.imgBase64" style="width: 100%;"/>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" align="center">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="deleteLog(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-tab-pane>
         </el-tabs>
     </el-card>
+
     <el-dialog title="用户管理" :visible.sync="dialogTableVisible">
         <el-form style="margin-top: 20px;" ref="form" :model="form" label-width="80px">
             <el-form-item label="头像">
@@ -80,15 +109,30 @@
                 gender: ''
             },
             tableData: [],
+            tableDataLog: [],
             dialogTableVisible: false,
             img: ''
         },
         mounted(){
-            // const img_upload = document.getElementById("img_upload");
-            // img_upload.addEventListener('change', this.readFile(), false);
             this.init()
+            this.initLog()
         },
         methods: {
+            initLog(){
+                let params = {
+                    page: 1,
+                    size: 1000
+                }
+                $.ajax({
+                    url: '/loglist',
+                    data: params,
+                    type: 'GET',
+                    success: (res) => {
+                        console.log(res)
+                        this.tableDataLog = res.content
+                    }
+                })
+            },
             init(){
                 let params = {
                     page: 1,
@@ -118,7 +162,80 @@
                 },1500)
             },
             add(){
+                this.form = {
+                    imgBase64: '',
+                    userName: '',
+                    gender: ''
+                }
+                this.img = ''
                 this.dialogTableVisible = true
+            },
+            editUser(row){
+
+            },
+            deleteLog(row){
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
+                    .then(() => {
+                        let params = {
+                            id: row.id
+                        }
+                        $.ajax({
+                            url: '/logdelete',
+                            data: params,
+                            type: 'POST',
+                            success: (res) => {
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                                // this.dialogTableVisible = false
+                                this.initLog()
+                            }
+                        })
+
+                    })
+                    .catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+            },
+            deleteUser(row){
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
+                    .then(() => {
+                        let params = {
+                            id: row.id
+                        }
+                        $.ajax({
+                            url: '/delete',
+                            data: params,
+                            type: 'POST',
+                            success: (res) => {
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                                // this.dialogTableVisible = false
+                                this.init()
+                            }
+                        })
+
+                    })
+                    .catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
             },
             save(){
                 let params = {
