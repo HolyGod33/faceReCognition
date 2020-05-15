@@ -31,6 +31,6 @@ public class BaiduService {
         JSONObject user = user_list.getJSONObject(0);
         String userName = user.getString("user_id");
 
-        return userRepository.findByUserName(userName);
+        return userRepository.findById(Integer.parseInt(userName)).get();
     }
 }
