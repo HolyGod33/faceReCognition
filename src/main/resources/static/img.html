@@ -23,11 +23,13 @@
         <button @click="takePhoto">拍照</button>
         <el-row style="margin-top: 20px;" :gutter="40">
             <el-col :span="12">
-                <video id="video" width="200px" height="200px" autoplay="autoplay"></video>
-                <canvas id="canvas_test" width="200px" height="200px"></canvas>
+                <div style="position: relative;">
+                    <video id="video" width="200px" height="200px" autoplay="autoplay"></video>
+                    <canvas style="position: absolute;left: 0;top: 0;" id="canvas_test" width="200px" height="200px"></canvas>
+                </div>
             </el-col>
             <el-col :span="12">
-                <canvas id="canvas" width="200px" height="200px"></canvas>
+                <canvas id="canvas" width="200px" height="150px"></canvas>
             </el-col>
         </el-row>
         <el-button type="primary" @click="uploadImg">上传图片</el-button>
@@ -62,11 +64,12 @@
                 window.location.pathname = 'index.html'
             },
             getMedia() {
-                var video = document.getElementById('video');
-                var canvas = document.getElementById('canvas_test');
-                var context = canvas.getContext('2d');
+                let video = document.getElementById('video');
+                this.video = video
+                let canvas = document.getElementById('canvas_test');
+                let context = canvas.getContext('2d');
 
-                var tracker = new tracking.ObjectTracker('face');
+                let tracker = new tracking.ObjectTracker('face');
                 tracker.setInitialScale(4);
                 tracker.setStepSize(2);
                 tracker.setEdgesDensity(0.1);
@@ -90,7 +93,7 @@
                 //获得Canvas对象
                 let canvas = document.getElementById("canvas");
                 let ctx = canvas.getContext('2d');
-                ctx.drawImage(this.video, 0, 0, 200, 200);
+                ctx.drawImage(this.video, 0, 0, 200, 150);
                 let url = canvas.toDataURL('image/png', 0.3)
                 this.imgUrl = url
                 console.log(this.imgUrl)
