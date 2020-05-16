@@ -5,6 +5,8 @@
     <title>GET VIDEO</title>
     <meta charset="utf-8">
     <script src="js/jquery.js"></script>
+    <script src="build/tracking-min.js"></script>
+    <script src="build/data/face-min.js"></script>
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- import Vue before Element -->
@@ -22,6 +24,7 @@
         <el-row style="margin-top: 20px;" :gutter="40">
             <el-col :span="12">
                 <video id="video" width="200px" height="200px" autoplay="autoplay"></video>
+                <canvas id="canvas_test" width="200px" height="200px"></canvas>
             </el-col>
             <el-col :span="12">
                 <canvas id="canvas" width="200px" height="200px"></canvas>
@@ -59,18 +62,29 @@
                 window.location.pathname = 'index.html'
             },
             getMedia() {
-                this.video = document.getElementById("video");
-                let constraints = {
-                    video: {width: 200, height: 200},
-                    audio: true
-                };
-                let promise = navigator.mediaDevices.getUserMedia(constraints);
-                promise.then((MediaStream)=> {
-                    this.video.srcObject = MediaStream;
-                    this.video.play();
-                }).catch(function (PermissionDeniedError) {
-                    console.log(PermissionDeniedError);
-                })
+                var video = document.getElementById('video');
+                var canvas = document.getElementById('canvas_test');
+                var context = canvas.getContext('2d');
+
+                var tracker = new tracking.ObjectTracker('face');
+                tracker.setInitialScale(4);
+                tracker.setStepSize(2);
+                tracker.setEdgesDensity(0.1);
+
+                tracking.track('#video', tracker, { camera: true });
+
+                tracker.on('track', function(event) {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+
+                    event.data.forEach(function(rect) {
+                        context.strokeStyle = '#a64ceb';
+                        context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                        context.font = '11px Helvetica';
+                        context.fillStyle = "#fff";
+                        context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+                        context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+                    });
+                });
             },
             takePhoto() {
                 //获得Canvas对象
@@ -105,7 +119,7 @@
                                 this.loading = false
                                 alert('识别成功，通过认证！')
                                 this.imgBase64 = res.imgBase64
-                                this.userName = '姓名：' + res.userName
+                                this.userName = '识别结果：' + res.userName
                                 this.show = true
                             },10000)
                         }
