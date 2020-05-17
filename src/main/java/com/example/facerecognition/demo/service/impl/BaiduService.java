@@ -26,11 +26,18 @@ public class BaiduService {
     public User faceRecognize(String imgBase64){
         JSONObject res = aipFace.search(imgBase64,"BASE64","CNN",null);
         log.info(res.toString(2));
+        if (!(res.get("result") instanceof JSONObject)){
+            return null;
+        }
         JSONObject array = res.getJSONObject("result");
         JSONArray user_list = array.getJSONArray("user_list");
         JSONObject user = user_list.getJSONObject(0);
         String userName = user.getString("user_id");
-
+        String  score = user.getString("score");
+        if(Double.parseDouble(score) < 90)
+        {
+            return null;
+        }
         return userRepository.findById(Integer.parseInt(userName)).get();
     }
 }
