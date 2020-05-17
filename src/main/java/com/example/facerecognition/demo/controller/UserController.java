@@ -91,6 +91,7 @@ public class UserController {
         recognizeRecord.setCreateTime(new Date());
         recognizeRecord.setImgBase64(imgBase64);
         recognizeRecord.setUserName("not_exist");
+        recognizeRecodeService.add(recognizeRecord);
         return ResponseEntity.ok("not exist");
     }
     @GetMapping("/loglist")

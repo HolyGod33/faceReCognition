@@ -33,8 +33,8 @@ public class BaiduService {
         JSONArray user_list = array.getJSONArray("user_list");
         JSONObject user = user_list.getJSONObject(0);
         String userName = user.getString("user_id");
-        String  score = user.getString("score");
-        if(Double.parseDouble(score) < 90)
+        Double score = (Double) user.get("score");
+        if(score < 90)
         {
             return null;
         }
